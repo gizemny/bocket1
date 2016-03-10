@@ -14,7 +14,12 @@
 Route::get('/', function () {
     return view('welcome');
 });
-
+Route::resource('bookmarks', 'BookmarksController', [
+    'except' => ['edit', 'create']
+]);
+Route::resource('tags', 'TagsController', [
+    'except' => ['edit', 'create']
+]);
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -27,5 +32,8 @@ Route::get('/', function () {
 */
 
 Route::group(['middleware' => ['web']], function () {
-    //
+    Route::auth();
+
+    Route::get('/home', 'HomeController@index');
+
 });
