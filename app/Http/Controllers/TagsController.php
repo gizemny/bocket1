@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -29,7 +28,6 @@ class TagsController extends Controller
     {
         $tag = new \App\Tag;
         $tag->user_id = Auth::user()->id;
-        $tag->tag_id = $request->tag_id;
         $tag->name = $request->name;
         $tag->save();
 
@@ -58,9 +56,7 @@ class TagsController extends Controller
     public function update(Request $request, $id)
     {
         $tag = \App\Tag::find($id);
-        // $tag->user_id = Auth::user()->id;
-        $tag->user_id = $request->id;
-        $tag->tag_id = $request->tag_id;
+        $tag->user_id = Auth::user()->id;
         $tag->name = $request->name;
         $tag->save();
 
