@@ -14,12 +14,12 @@
 Route::get('/', function () {
     return view('welcome');
 });
-Route::resource('bookmarks', 'BookmarksController', [
-    'except' => ['edit', 'create']
-]);
-Route::resource('tags', 'TagsController', [
-    'except' => ['edit', 'create']
-]);
+// Route::resource('bookmarks', 'BookmarksController', [
+//     'except' => ['edit', 'create']
+// ]);
+// Route::resource('tags', 'TagsController', [
+//     'except' => ['edit', 'create']
+// ]);
 /*
 |--------------------------------------------------------------------------
 | Application Routes
