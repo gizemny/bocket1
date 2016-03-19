@@ -40,6 +40,13 @@ Route::group(['middleware' => ['web']], function () {
 
 Route::group(['middleware' => 'web'], function () {
     Route::auth();
+    
+    Route::resource('bookmarks', 'BookmarksController', [
+		'only' => ['store', 'update','destroy']
+    ]);
+    Route::resource('tags', 'TagsController', [
+		'only' => ['store', 'update','destroy']
+    ]);
 
     Route::get('/home', 'HomeController@index');
 });
