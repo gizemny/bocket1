@@ -26,7 +26,7 @@ class BookmarksController extends Controller
     public function store(Request $request)
     {
         $bookmark = new \App\Bookmark;
-        $bookmark->user_id = Auth::user()->id;
+        $bookmark->user_id = \Auth::user()->id;
         $bookmark->url = $request->url;
         $bookmark->save();
 
