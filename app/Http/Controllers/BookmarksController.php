@@ -54,9 +54,12 @@ class BookmarksController extends Controller
     public function update(Request $request, $id)
     {
         $bookmark = \App\Bookmark::find($id);
+        if ($bookmark->user_id == \Auth::user()->id) {
         $bookmark->url = $request->url;
         $bookmark->save();
-
+        } else {
+            return response('Unathorized', 403);
+        }
         return $bookmark;
     }
 

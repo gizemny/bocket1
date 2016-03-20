@@ -56,9 +56,12 @@ class TagsController extends Controller
     public function update(Request $request, $id)
     {
         $tag = \App\Tag::find($id);
-        $tag->name = $request->name;
-        $tag->save();
-
+        if ($tag->user_id == \Auth::user()->id) {
+            $tag->name = $request->name;
+            $tag->save();
+        } else {
+            return response('Unathorized', 403);
+        }
         return $tag;
     }
 

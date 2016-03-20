@@ -14,12 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
-// Route::resource('bookmarks', 'BookmarksController', [
-//     'except' => ['edit', 'create']
-// ]);
-// Route::resource('tags', 'TagsController', [
-//     'except' => ['edit', 'create']
-// ]);
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -35,6 +30,13 @@ Route::group(['middleware' => ['web']], function () {
     Route::auth();
 
     Route::get('/home', 'HomeController@index');
+
+    Route::resource('bookmarks', 'BookmarksController', [
+        'only' => ['index', 'show']
+    ]);
+    Route::resource('tags', 'TagsController', [
+        'only' => ['index', 'show']
+    ]);
 
 });
 
