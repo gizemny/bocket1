@@ -55,8 +55,8 @@ class BookmarksController extends Controller
     {
         $bookmark = \App\Bookmark::find($id);
         if ($bookmark->user_id == \Auth::user()->id) {
-        $bookmark->url = $request->url;
-        $bookmark->save();
+            $bookmark->url = $request->url;
+            $bookmark->save();
         } else {
             return response('Unathorized', 403);
         }
@@ -72,7 +72,12 @@ class BookmarksController extends Controller
     public function destroy($id)
     {
         $bookmark = \App\Bookmark::find($id);
-        $bookmark->delete();
+        if ($bookmark->user_id == \Auth::user()->id) {
+            $bookmark->delete();
+        } else {
+            return response('Unathorized', 403);
+        }
+      
         return $bookmark;
     }
 }

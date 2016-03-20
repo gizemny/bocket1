@@ -74,7 +74,12 @@ class TagsController extends Controller
     public function destroy($id)
     {
         $tag = \App\Tag::find($id);
-        $tag->delete();
+        if ($tag->user_id == \Auth::user()->id) {
+            $tag->delete();
+        } else {
+            return response('Unathorized', 403);
+        }
+      
         return $tag;
     }
 }
