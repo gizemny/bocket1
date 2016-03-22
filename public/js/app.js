@@ -29,6 +29,11 @@ var TagsCollection = Backbone.Collection.extend({
 var BookmarkItemView = Backbone.View.extend({
 	el: '<li></li>',
 	template: _.template('<h2><%= bookmark.get("url") %></h2>'),
+
+	initiate: function() {
+		this.listenTo(this.model, 'sync', this.render);
+	},
+
 	render: function() {
 		this.$el.html(this.template({ bookmark: this.model })); 
 	}
@@ -47,6 +52,13 @@ var BookmarksListView = Backbone.View.extend({
 	el: '<ul></ul>',
 	template: undefined,
 
+	initialize: function() {
+		this.listenTo(this.collection, 'all', function(event) {
+			console.log(event);
+		});
+		this.listenTo(this.collection, 'sync update', this.render);
+	},
+
 	render: function() {
 		var that = this; 
 		this.collection.each(function(bookmarkModel) {
@@ -58,29 +70,11 @@ var BookmarksListView = Backbone.View.extend({
 	}
 });
 
-// var bookmark = new BookmarkModel({id: 1});
-// var tag = new TagModel({id: 1});
+var bookmarks = new BookmarksCollection();
+bookmarks.fetch();
 
-//trying to stop from renders before we get a title
-//because it is asychronous so we want a success callback
-// bookmark.fetch({
-// 	success: function() {
-// 		//instantiate new one
-// 		var bookmarkItemView = new BookmarkItemView({ model: bookmark });
-// 		//render
-// 		bookmarkItemView.render();
-// 		//stick it into the .el and stick that into the content div from our home template
-// 		$('#content').html(bookmarkItemView.el);
-// 	}
-// });
-// tag.fetch({
-// 	success: function() {
-// 		//instantiate new one
-// 		var tagItemView = new TagItemView({ model: tag });
-// 		//render
-// 		tagItemView.render();
-// 		//stick it into the .el and stick that into the content div from our home template
-// 		$('#content').html(tagItemView.el);
-// 	}
-// });
+var bookmarksListView = new BookmarksListView({ collection: bookmarks });
+bookmarksListView.render();
 
+bookmarksListView.el;
+$('#content').html(bookmarksListView.el);
