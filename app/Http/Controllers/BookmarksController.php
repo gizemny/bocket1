@@ -15,7 +15,8 @@ class BookmarksController extends Controller
      */
     public function index()
     {
-        return \App\Bookmark::all();
+        // return \App\Bookmark::all();
+        return \App\Bookmark::with('user')->orderBy('id', 'desc')->get();
     }
     /**
      * Store a newly created resource in storage.

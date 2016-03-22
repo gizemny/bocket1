@@ -15,6 +15,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+if (env('APP_DEBUG')) {
+    // Route to view logs. Only for use in development
+    Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+}
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -31,24 +35,22 @@ Route::group(['middleware' => ['web']], function () {
 
     Route::get('/home', 'HomeController@index');
 
-    Route::resource('bookmarks', 'BookmarksController', [
-        'only' => ['index', 'show']
-    ]);
-    Route::resource('tags', 'TagsController', [
-        'only' => ['index', 'show']
-    ]);
+    Route::group(['prefix' => 'api'], function () {
+        Route::resource('bookmarks', 'BookmarksController', [
+            'only' => ['index', 'show']
+        ]);
+        Route::resource('tags', 'TagsController', [
+            'only' => ['index', 'show']
+        ]);
 
-});
+        Route::group(['middleware' => 'auth'], function () {            
+            Route::resource('bookmarks', 'BookmarksController', [
+        		'only' => ['store', 'update','destroy']
+            ]);
+            Route::resource('tags', 'TagsController', [
+        		'only' => ['store', 'update','destroy']
+            ]);
 
-Route::group(['middleware' => 'web'], function () {
-    Route::auth();
-    
-    Route::resource('bookmarks', 'BookmarksController', [
-		'only' => ['store', 'update','destroy']
-    ]);
-    Route::resource('tags', 'TagsController', [
-		'only' => ['store', 'update','destroy']
-    ]);
-
-    Route::get('/home', 'HomeController@index');
+        });
+    });
 });
