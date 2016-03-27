@@ -10,8 +10,7 @@
     <!-- Fonts -->
 
     <!-- Styles -->
-
-</head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css"></head>
 <body>
     <div id="content"></div>
 
@@ -20,12 +19,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.2/backbone-min.js"></script>
     <script src="{{ asset('js/app.js') }}"></script>    
-    <script type="text/javascript">
+<!--     <script type="text/javascript">
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-    </script>
+    </script> -->
 </body>
 </html>
