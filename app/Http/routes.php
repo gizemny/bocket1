@@ -42,6 +42,9 @@ Route::group(['middleware' => ['web']], function () {
         Route::resource('tags', 'TagsController', [
             'only' => ['index', 'show']
         ]);
+        Route::resource('users', 'UsersController', [
+            'only' => ['index', 'show']
+        ]);
 
         Route::group(['middleware' => 'auth'], function () {            
             Route::resource('bookmarks', 'BookmarksController', [
@@ -50,7 +53,9 @@ Route::group(['middleware' => ['web']], function () {
             Route::resource('tags', 'TagsController', [
         		'only' => ['store', 'update','destroy']
             ]);
-
+            Route::resource('users', 'UsersController', [
+                'only' => ['store', 'update','destroy']
+            ]);
         });
     });
 });

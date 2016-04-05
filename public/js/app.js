@@ -1,20 +1,40 @@
 'use strict';
 
-// $(document).on('ready', function() {
+$(document).on('ready', function() {
 	$.ajaxSetup({
 	    headers: {
 	        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 	    }
 	});
-// });
+});
 
 var BookmarkModel = Backbone.Model.extend({
 	urlRoot: '/api/bookmarks/',
-	idAttribute: 'id'
+	idAttribute: 'id',
+
+	parse: function(response) {
+	if (response.bookmark_tags) {
+		response.bookmark_tags = new TagsCollection(response.bookmark_tags);
+	}
+	return response;
+	}
+
 });
 
 var TagModel = Backbone.Model.extend({
 	urlRoot: '/api/tags/',
+	idAttribute: 'id',
+		
+		// parse: function(response) {
+		// if (response.bookmark) {
+		// 	response.bookmark = new BookmarksCollection(response.bookmark);
+		// }
+		// return response;
+		// }
+});
+
+var UserModel = Backbone.Model.extend({
+	urlRoot: '/api/users/',
 	idAttribute: 'id'
 });
 
@@ -28,98 +48,111 @@ var TagsCollection = Backbone.Collection.extend({
 	model: TagModel
 });
 
-var BookmarkItemView = Backbone.View.extend({
-	el: '<li></li>',
-	template: _.template('<p><%= bookmark.get("url") %></p>'),
-
-	initiate: function() {
-		this.listenTo(this.model, 'sync', this.render);
-	},
-
-	render: function() {
-		this.$el.html(this.template({ bookmark: this.model })); 
-	}
-});
-
-var TagItemView = Backbone.View.extend({
-	el: '<li></li>',
-	template: _.template('<h2><%= tag.get("url") %></h2>'),
-	
-	initiate: function() {
-			this.listenTo(this.model, 'sync', this.render);
-	},
-	
-	render: function() {
-		this.$el.html(this.template({tag: this.model})) 
-	}
+var UsersCollection = Backbone.Collection.extend({
+	url: '/api/users/',
+	model: UserModel
 });
 
 
 var BookmarksListView = Backbone.View.extend({
 	el: '<ul></ul>',
-	template: undefined,
+	
+	template: _.template('\
+		<% bookmarks.each(function(bookmark) { %>\
+			<li><a data-id="<%= bookmark.id %>" href="#"><%= bookmark.get("url") %></a></li>\
+		<% }) %>\
+	'),
+
+	events: {
+		'click a': function(event) {
+					event.preventDefault();
+					var bookmarkId = $(event.target).data('id');
+					var bookmark = new BookmarkModel({id: bookmarkId});
+					bookmark.fetch({
+						success: function() {
+							var tagsListView = new TagsListView({ 
+								collection: bookmark.get('bookmark_tags')
+							});
+							$('#tags').html(tagsListView.render().el);
+						}
+					});
+				}
+	},
 
 	initialize: function() {
 		this.listenTo(this.collection, 'update', this.render);
 	},
 
 	render: function() {
-		var that = this; 
-		this.collection.each(function(bookmarkModel) {
-			var bookmarkItemView = new BookmarkItemView({ model: bookmarkModel });
-			bookmarkItemView.render();
-			that.$el.append(bookmarkItemView.el);
-			// $('#content').html(bookmarksListView.el);
-		}); 
+		this.$el.html(this.template({ bookmarks: this.collection }));
+		return this;
+	}
+});
+
+var TagsListView = Backbone.View.extend({
+	el: '<ul></ul>',
+
+	template: _.template('\
+			<% tags.each(function(tag) { %>\
+				<li>\
+					<a href="#"><%= tag.get("name") %></a>\
+				</li>\
+			<% }) %>\
+			'),
+
+	initialize: function() {
+		this.listenTo(this.collection, 'update', this.render);
+	},
+
+	render: function() {
+		this.$el.html(this.template({ tags: this.collection }));
+		return this;
 	}
 });
 
 var HomeView = Backbone.View.extend({
 	el: '<div class="container">\
-	      <div class="row">\
-	        <div class="three columns">three columns</div>\
-	        <div class="six columns">six columns</div>\
-	          <div class="row">\
-	            <div class="twelve columns"></div>\
-	          </div>\
-	          <div class="row">\
-	            <div class="twelve columns" id="all-bookmarks"></div>\
-	          </div>\
-	          <div class="three columns"></div>\
-	      </div>\
-	    </div>\
+			<div class="row">\
+				<div class="three columns"></div>\
+				<div class="six columns">\
+					<div class="row">\
+						<div class="twelve columns" id="tags"></div>\
+					</div>\
+					<div class="row">\
+						<div class="twelve columns"></div>\
+					</div>\
+				</div>\
+				<div class="three columns" id="all-bookmarks"></div>\
+			</div>\
+		</div>\
 	  ',
 
-	initialize: function() {
-		this.listenTo(this.collection, 'all', function(event) {
-			console.log(event);
+	insertBookmarks: function() {
+		var bookmarks = new BookmarksCollection();
+		bookmarks.fetch();
+		var bookmarksListView = new BookmarksListView({ 
+			collection: bookmarks
 		});
-		this.listenTo(this.collection, 'sync update', this.render);
+		this.$el.find('#all-bookmarks').html(bookmarksListView.render().el);
+	},
+
+	insertTags: function() {
+		var tags = new TagsCollection();
+		tags.fetch();
+		var tagsListView = new TagsListView({ 
+			collection: tags
+		});
+		this.$el.find('#tags').html(tagsListView.render().el);
 	},
 
 	render: function() {
-		var that = this;
-		var bookmarks = new BookmarksCollection();
-		bookmarks.fetch()
-		var bookmarksListView = new BookmarksListView({ collection: bookmarks});
-		bookmarksListView.render();
-		this.$el.find('#all-bookmarks').html(bookmarksListView.el);
+		this.insertBookmarks();
+		this.insertTags();
 
 		return this;
 	},
 });
 
-
-
 var homeView = new HomeView();
 $('#content').html(homeView.render().el);
 
-
-// var bookmarks = new BookmarksCollection();
-// bookmarks.fetch();
-
-// var bookmarksListView = new BookmarksListView({ collection: bookmarks });
-// bookmarksListView.render();
-
-// bookmarksListView.el;
-// $('#content').html(bookmarksListView.el);

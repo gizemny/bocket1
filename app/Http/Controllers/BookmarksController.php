@@ -42,7 +42,9 @@ class BookmarksController extends Controller
      */
     public function show($id)
     {
-        return \App\Bookmark::find($id);
+        return \App\Bookmark::with([
+            'bookmarkTags'
+        ])->find($id);
     }
 
     /**
